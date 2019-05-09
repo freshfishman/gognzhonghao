@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <!-- 设定网页过期时间,一旦网页过期,必须到服务器上重新 -->
+    <meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT">
+    <script src="https://as.alipayobjects.com/g/component/fastclick/1.0.6/fastclick.js"></script>
+    <script>
+        if ('addEventListener' in document) {
+            document.addEventListener('DOMContentLoaded', function () {
+                FastClick.attach(document.body);
+            }, false);
+        }
+        if (!window.Promise) {
+            document.writeln('<script src="https://as.alipayobjects.com/g/component/es6-promise/3.2.2/es6-promise.min.js"' + '>' + '<' + '/' + 'script>');
+        }
+    </script>
+    <style>
+
+    </style>
+</head>
+<body class="J_wrapper">
+
+    <div id="J_app-pages" ></div>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    ﻿<script>
+        (function(doc, win) {
+            var docEl = doc.documentElement;
+            //orientationchange 兼容性
+            resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
+            recalc = function() {
+                var clientWidth = docEl.clientWidth;
+                if(!clientWidth) return;
+                docEl.style.fontSize = 16 * (clientWidth / 375) + 'px';
+            };
+            if(!doc.addEventListener) return;
+            win.addEventListener(resizeEvt, recalc, false);
+            doc.addEventListener('DOMContentLoaded', recalc, false);
+        }(document, window));
+
+        var a=document.body.innerHTML;
+        document.body.innerHTML=a.replace(/\ufeff/g,'');
+    </script>
+
+    <script src="./vendor.min.js"></script>
+    <script charset="utf-8" src="https://map.qq.com/api/js?v=2.exp&key=BC2BZ-6MFK6-A2EST-MMYG5-M7ZSH-JGFTX&libraries=geometry,convertor"></script>
+</body>
+</html>
