@@ -1,6 +1,6 @@
 import React from 'react';
 import Module from '../../lib/module';
-import { Flex, WhiteSpace, WingBlank, Text,List,Button, InputItem,Carousel } from 'antd-mobile'
+import { Flex, WhiteSpace, WingBlank, Text,List,Button, InputItem,Carousel,Toast } from 'antd-mobile'
 import ListItem from 'antd-mobile/lib/list/ListItem';
 const h = document.documentElement.clientHeight;
 
@@ -9,20 +9,13 @@ class Experience extends Module {
         super(props);
         this.state={
             data:[1,2,3,4],                        //
-            imagesUrl:[],                          //
+            imagesUrl:[],                          //轮播图连接
+            userName:'',                           //用户姓名
+            userPhone:'',                          //用户手机号码
         }
     }
 
     componentDidMount() {
-        // console.log(this.props.location.query);
-        /*  WX.config({
-             debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-             appId: 'wxaff0bc4ad040f2a8', // 必填，公众号的唯一标识
-             timestamp: , // 必填，生成签名的时间戳
-             nonceStr: '', // 必填，生成签名的随机串
-             signature: '',// 必填，签名
-             jsApiList: [] // 必填，需要使用的JS接口列表
-         }); */
         this.getSwiperImages(); 
     }
 
@@ -38,6 +31,37 @@ class Experience extends Module {
             })
         })
     }
+
+    /** 
+     * 获取姓名 
+     */
+    changeName(val){
+        this.setState({
+            userName:val
+        })
+    }
+
+    /** 
+     * 获取手机号码 
+     */
+    changePhone(val){
+        this.setState({
+            userPhone:val
+        });
+    }
+
+    /**
+     * 向后台传输数据 
+     */
+    submitInfo=()=>{
+        let { userName,userPhone } = this.state;
+        if(userName&&userPhone){
+            
+        }else{
+            Toast.info('请输入姓名和手机号码',1)
+        }
+    }
+
     jump(name) {
 		/**
 		 * query是加密的
@@ -74,7 +98,6 @@ class Experience extends Module {
                         slideWidth={0.8}
                         autoplay
                         infinite
-                        beforeChange={(from, to) => console.log(`slide from ${from} to ${to}`)}
                         afterChange={index => this.setState({ slideIndex: index })}
                     >
                         {this.state.data.map((val, index) => (
@@ -109,6 +132,7 @@ class Experience extends Module {
                             <InputItem 
                                 className="fs_14"
                                 placeholder="请输入姓名"
+                                onBlur={val=>{this.changeName(val)}}
                             >姓名</InputItem>
                         </ListItem>
                         <ListItem>
@@ -116,11 +140,12 @@ class Experience extends Module {
                                 className="fs_14"
                                 type="phone"
                                 placeholder="请填写手机号码"
+                                onChange={val=>{this.changePhone(val)}}
                             >填写手机号</InputItem>
                         </ListItem>
                     </List>
                 </div>
-                <div className="submit-btn fs_22">
+                <div className="submit-btn fs_22" onClick={this.submitInfo}>
                     申请体验
                 </div>
             </div>
