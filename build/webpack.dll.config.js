@@ -15,8 +15,8 @@ const vendors = [
 	'jquery',
 	'antd-mobile',
 	'fastclick',
-	'moment',
-	'qrcode.react'
+	'video-react',
+	'lodash'
 
 ];
 

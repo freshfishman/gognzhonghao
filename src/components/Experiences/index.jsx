@@ -1,6 +1,6 @@
 import React from 'react';
 import Module from '../../lib/module';
-import { Flex, WhiteSpace, WingBlank, Text,List,Button, InputItem,Carousel,Toast } from 'antd-mobile'
+import { Flex, WhiteSpace, WingBlank, Text,List,Button, InputItem,Carousel,Toast,Modal } from 'antd-mobile'
 import ListItem from 'antd-mobile/lib/list/ListItem';
 const h = document.documentElement.clientHeight;
 
@@ -12,6 +12,9 @@ class Experience extends Module {
             imagesUrl:[],                          //轮播图连接
             userName:'',                           //用户姓名
             userPhone:'',                          //用户手机号码
+            siid:'',                               //当前店铺的id
+            openId:0,
+            showModal:false, 
         }
     }
 
@@ -23,11 +26,13 @@ class Experience extends Module {
      *获取轮播图 
      */
     getSwiperImages(){
+        let siid = this.props.location.search.substring(1).split('=')[1]
         this.request({
             api:'GetSwiperImages'
         },res=>{
             this.setState({
-                imagesUrl:res.data
+                imagesUrl:res.data,
+                siid
             })
         })
     }
@@ -54,9 +59,23 @@ class Experience extends Module {
      * 向后台传输数据 
      */
     submitInfo=()=>{
-        let { userName,userPhone } = this.state;
+        let { userName,userPhone,siid,openId } = this.state;
         if(userName&&userPhone){
-            
+            this.request({
+                api:'GetExperienceInfo',
+                parama:{
+                    PHONE:userPhone,
+                    NAME:userName,
+                    SIID:siid,
+                    OPEN_ID:openId
+                }
+            },res=>{
+                if(res.code === '200'){
+                    this.setState({
+                        showModal:true,
+                    })
+                }
+            })
         }else{
             Toast.info('请输入姓名和手机号码',1)
         }
@@ -83,12 +102,10 @@ class Experience extends Module {
             pathname: name,
             search: `?type=${this.state.type}`
         });
-
-
     }
 
     render() {
-        let { imagesUrl } = this.state
+        let { imagesUrl,showModal } = this.state
         return (
             <div className="C_Experience bg_f" style={{ height: h }}>
                 <div className="carousel">
@@ -148,6 +165,18 @@ class Experience extends Module {
                 <div className="submit-btn fs_22" onClick={this.submitInfo}>
                     申请体验
                 </div>
+
+                <Modal
+                    visible={showModal}
+                    transparent
+                    maskClosable={false}
+                    footer={[{ text: '确定', onPress: () => { this.props.history.goBack()} }]}
+                    afterClose={() => { alert('afterClose'); }}
+                >
+                    <div style={{ height: 20, overflow: 'scroll',color:'#000' }}>
+                      申请成功
+                    </div>
+                </Modal>
             </div>
         )
     }

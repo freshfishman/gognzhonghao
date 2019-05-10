@@ -1,6 +1,16 @@
 import React, { Component, PropTypes } from 'react';
 import Module from '../../lib/module';
-import { WhiteSpace, WingBlank,Flex,Text } from 'antd-mobile'
+import { WhiteSpace, WingBlank,Flex,Text } from 'antd-mobile';
+import {
+    Player,
+    ControlBar,
+    ReplayControl,
+    ForwardControl,
+    CurrentTimeDisplay,
+    TimeDivider,
+    PlaybackRateMenuButton,
+    VolumeMenuButton
+} from 'video-react';
 
 class AboutUs extends Module {
     constructor(props) {
@@ -56,12 +66,18 @@ class AboutUs extends Module {
                 <div className="title fs_12" style={{ color:'#61E55D'}}>Healthy</div>
                 <WhiteSpace size="xl" />
                 <WingBlank size="md">
-                <video
-                    src="http://qiniu.hinets.net/%E5%85%AC%E5%8F%B8%E5%AE%A3%E4%BC%A0%E8%A7%86%E9%A2%91.mp4"
-                    height="200px"
-                    controls
-                    autoPlay
-                ></video>
+                    <Player autoPlay>
+                        <source src="http://qiniu.hinets.net/%E5%85%AC%E5%8F%B8%E5%AE%A3%E4%BC%A0%E8%A7%86%E9%A2%91.mp4" />
+                        
+                        <ControlBar>
+                            <ReplayControl seconds={10} order={1.1} />
+                            <ForwardControl seconds={30} order={1.2} />
+                            <CurrentTimeDisplay order={4.1} />
+                            <TimeDivider order={4.2} />
+                            <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.1]} order={7.1} />
+                            <VolumeMenuButton disabled />
+                        </ControlBar>
+                    </Player>
                 </WingBlank>
                 <WhiteSpace size="lg" />
                 <WingBlank size="md">

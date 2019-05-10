@@ -1,6 +1,7 @@
 import React from 'react';
 import Module from '../../lib/module';
 import { Flex, WhiteSpace, WingBlank,Text,ListView,PullToRefresh } from 'antd-mobile';
+import _ from 'lodash';
 const WX = window.wx;
 class ShopLists extends Module {
     constructor(props) {
@@ -96,6 +97,14 @@ class ShopLists extends Module {
      */
     getShopsLocation(list){
         var _location = [];
+        /* list.map((item,index)=>{
+            $.ajax({
+                url: `https://apis.map.qq.com/ws/geocoder/v1/?address=${item.dress}&key=BC2BZ-6MFK6-A2EST-MMYG5-M7ZSH-JGFTX`,
+                type:'get',
+            }).done(res=>{
+                console.log(res);
+            })
+        }) */
         var that = this
         for(let i=0;i<list.length;i++){
 
@@ -107,7 +116,7 @@ class ShopLists extends Module {
                 that.setState({
                     location: _location
                 }, () => {
-                    //console.log(that.state.location)
+                    console.log(that.state.location)
                     that.combineShopListWithLocation();
                 })
             });
@@ -120,7 +129,7 @@ class ShopLists extends Module {
      */
     combineShopListWithLocation(){
         let { shopListData,userLocation,location } = this.state;
-        //console.log(location);
+        console.log(location);
         for (let i = 0; i < shopListData.length;i++){
             for(let j=0;j<location.length;j++){
                 if(shopListData[i].dress.includes(location[j].addressComponents.street)){
@@ -128,7 +137,7 @@ class ShopLists extends Module {
                     from = new qq.maps.LatLng(userLocation.lat, userLocation.lng);
                     to = new qq.maps.LatLng(location[j].location.lat, location[j].location.lng);
                     distance = qq.maps.geometry.spherical.computeDistanceBetween(from, to);
-                    shopListData[i].distance = (distance / 1000).toFixed(2);
+                    shopListData[i].distance = Number((distance / 1000).toFixed(2));
                     shopListData[i].lat = location[j].location.lat;
                     shopListData[i].lng = location[j].location.lng;
                 }
@@ -166,12 +175,12 @@ class ShopLists extends Module {
     }
     
     renderRow = (rowData, sectionID, rowID) => {
-        console.log(rowData)
+        //console.log(rowData)
         return (
             <div className="bg_f shop-item" 
                  onClick={()=>{this.props.history.push({
                      pathname:'/ShopDetails',
-                     search:`?name=${rowData.dianpu}&addr=${rowData.dress}&image=${rowData.image}&lat=${rowData.lat}&lng=${rowData.lng}`
+                     search:`?name=${rowData.dianpu}&addr=${rowData.dress}&image=${rowData.image}&lat=${rowData.lat}&lng=${rowData.lng}&siid=${rowData.siid}`
                  })}}
             >
                 <WingBlank size="md">
@@ -221,6 +230,7 @@ class ShopLists extends Module {
 
     render() {
         let { shopListData } = this.state;
+        shopListData = _.sortBy(shopListData,['distance']);
         return (
             <div className="C_ShopLists">
                 <Flex justify="between" className="headers bg_f">
@@ -228,7 +238,7 @@ class ShopLists extends Module {
                     <div className="fs_20" style={{flexGrow:1,marginLeft:'.27rem' ,}}>健康路径线下门店</div>
                     <Flex>
                         <div className="fs_14">杭州</div>
-                        <div></div>
+                        <div className="font_family icon-weizhi fs_20" style={{ marginLeft: '10px', color:'rgba(142, 213, 78, 1)'}}></div>
                     </Flex>
                 </Flex>
                 <WhiteSpace size="md" />

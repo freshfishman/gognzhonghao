@@ -13,6 +13,7 @@ import Experience from './src/components/Experiences';                  //申请
 
 import './src/resources/css/app.less';
 import 'antd-mobile/dist/antd-mobile.css';
+import "./node_modules/video-react/dist/video-react.css";
 
 ReactDom.render((
 	<HashRouter>

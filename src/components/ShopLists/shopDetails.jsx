@@ -1,7 +1,6 @@
 import React from 'react';
 import Module from '../../lib/module';
 import { Flex, WhiteSpace, WingBlank, Text } from 'antd-mobile';
-import ReactQMap from 'react-qmap';
 const h = document.documentElement.clientHeight;
 let classMap, windowMap;
 const WX = window.wx;
@@ -14,8 +13,7 @@ class ShopDetails extends Module {
     }
 
     componentDidMount() {
-        
-        this.getShopDetail(); 
+        this.getShopDetail();
     }
 
     getShopDetail(){
@@ -29,19 +27,70 @@ class ShopDetails extends Module {
         })
         this.setState({
             shopDetail
+        },()=>{
+            let {shopDetail}=this.state;
+            this.getOwnerLocation(shopDetail);
         })
     }
-
-    /* getOwnerLocation(shopDetail) {
+    /** 
+     * 绘制地图 
+     */
+    getOwnerLocation(shopDetail) {
         var myLatlng = new qq.maps.LatLng(shopDetail.lat, shopDetail.lng);
         var myOptions = {
-            zoom: 8,
-            center: myLatlng
+            zoom: 13,
+            center: myLatlng,
+            mapTypeControlOptions: {
+                //设置控件的地图类型ID，ROADMAP显示普通街道地图，SATELLITE显示卫星图像，HYBRID显示卫星图像上的主要街道透明层
+                mapTypeIds: [
+                    qq.maps.MapTypeId.ROADMAP
+                ],
+            }
         };
-        var map = new qq.maps.Map(document.getElementsByClassName("shop-map"), myOptions);
-        console.log(map)
+        var map = new qq.maps.Map(document.getElementById("shop-map"), myOptions);
+        var marker = new qq.maps.Marker({
+            //设置Marker的位置坐标
+            position: myLatlng,
+            //设置显示Marker的地图
+            map: map
+        });
+
+        //设置Marker的可见性，为true时可见,false时不可见，默认属性为true
+        marker.setVisible(true);
+        //设置Marker的动画属性为从落下
+        marker.setAnimation(qq.maps.MarkerAnimation.DOWN);
+        ////设置Marker自定义图标的属性，size是图标尺寸，该尺寸为显示图标的实际尺寸，origin是切图坐标，该坐标是相对于图片左上角默认为（0,0）的相对像素坐标，anchor是锚点坐标，描述经纬度点对应图标中的位置
+        /* var anchor = new qq.maps.Point(0, 39),
+            size = new qq.maps.Size(42, 68),
+            origin = new qq.maps.Point(0, 0),
+            icon = new qq.maps.MarkerImage(
+                "https://open.map.qq.com/doc/img/nilt.png",
+                size,
+                origin,
+                anchor
+            );
+        marker.setIcon(icon); */
+        //设置Marker阴影图片属性，size是图标尺寸，该尺寸为显示图标的实际尺寸，origin是切图坐标，该坐标是相对于图片左上角默认为（0,0）的相对像素坐标，anchor是锚点坐标，描述经纬度点对应图标中的位置
+        /* var anchorb = new qq.maps.Point(3, -30),
+            sizeb = new qq.maps.Size(42, 11),
+            origin = new qq.maps.Point(0, 0),
+            iconb = new qq.maps.MarkerImage(
+                "https://open.map.qq.com/doc/img/nilb.png",
+                sizeb,
+                origin,
+                anchorb
+            );
+        marker.setShadow(iconb);   */      
+        //添加信息窗口
+        var info = new qq.maps.InfoWindow({
+            map: map
+        });
+        //获取标记的可拖动属性
+        info.open();
+        info.setContent(`公司地址:<br/>${shopDetail.addr}`);
+        info.setPosition(marker.getPosition()); 
     }
- */
+
     jump(name) {
 		/**
 		 * query是加密的
@@ -66,21 +115,6 @@ class ShopDetails extends Module {
 
 
     }
-
-    _setMarker = () => {
-        let { shopDetail } = this.state;
-        const marker = new windowMap.Marker({
-            map: classMap,
-            position: new windowMap.LatLng(shopDetail.lat,shopDetail.lng),
-            animation: windowMap.MarkerAnimation.DROP,
-        });
-        //console.log(marker);
-    }
-    _getMap = (map, wMap) => {
-        classMap = map;
-        windowMap = wMap;
-        this._setMarker();
-    }
     
     render() {
         let { shopDetail } = this.state;
@@ -98,19 +132,15 @@ class ShopDetails extends Module {
                     </div>
                     <div 
                         className="express-btn fs_12" 
-                        onClick={()=>{this.props.history.push('/Experience')}}
+                        onClick={()=>{this.props.history.push({
+                            pathname:'/Experience',
+                            search:`?siid=${shopDetail.siid}`
+                        })}}
                     >
                         申请体验
                     </div>
                 </Flex>
-                <div className="shop-map">
-                    <ReactQMap
-                        center={{ latitude: shopDetail.lat, longitude: shopDetail.lng }}
-                        initialOptions={{ zoomControl: true, mapTypeControl: true,zoom:12 }}
-                        getMap={(map, wMap) => this._getMap(map, wMap)}
-                        apiKey="xxxxxx-xxxxx-xxxxx-xxxxxx"
-                    />
-                </div>
+                <div id="shop-map"></div>
                 <WingBlank>
                     <div style={{ color: 'rgba(0,0,0,.8)',fontWeight: 600 }}>
                     <div className="fs_16">基础信息</div>
