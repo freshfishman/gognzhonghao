@@ -1,18 +1,18 @@
 import React from 'react';
 import Module from '../../lib/module';
-import { Flex, WhiteSpace, WingBlank,Text,ListView } from 'antd-mobile';
-
-
+import { Flex, WhiteSpace, WingBlank,Text,ListView,PullToRefresh } from 'antd-mobile';
 const WX = window.wx;
 class ShopLists extends Module {
     constructor(props) {
         super(props);
         this.state={
             shopListData:[],                             //门店列表 
-            location:[],                                 //门店定位
-            shopListDetail:[],                           //门店详细信息
+            location:[],                                 //腾讯api返回门店具体地址
             distances:[],                                //距离      
-            userLocation:{},                             //用户当前坐标     
+            userLocation: null || { lat: 30.180775, lng: 120.26557},                             //用户当前坐标  
+            isLoading:true,    
+            refreshing:false,                   
+
         }
     }
 
@@ -21,7 +21,6 @@ class ShopLists extends Module {
         this.getWxConfig();
         this.getOwnerLocation();
         this.getStoresListsData();
-        this.getDistance();
     }
     
     
@@ -54,7 +53,7 @@ class ShopLists extends Module {
         WX.getLocation({
             type: 'wgs84',                     // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
             success: function (res) {
-                var _userLocation = {}
+                var _userLocation = {};
                 var latitude = res.latitude;   // 纬度，浮点数，范围为90 ~ -90
                 var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
                 var speed = res.speed;         // 速度，以米/每秒计
@@ -98,61 +97,48 @@ class ShopLists extends Module {
     getShopsLocation(list){
         var _location = [];
         var that = this
-        var callbacks = {
-            complete: function (results) {
-                /* map.setCenter(result.detail.location);
-                var marker = new qq.maps.Marker({
-                    map: map,
-                    position: result.detail.location
-                }); */
-                _location.push(results.detail.location);
+        for(let i=0;i<list.length;i++){
+
+            let geocoder = null;
+            geocoder = new qq.maps.Geocoder();
+            geocoder.setComplete(function(result){
+                //console.log(result.detail,list[i].dress)
+                _location.push(result.detail);
                 that.setState({
-                    location:_location
-                },()=>{
+                    location: _location
+                }, () => {
+                    //console.log(that.state.location)
                     that.combineShopListWithLocation();
                 })
-                
-            }
+            });
+            geocoder.getLocation(list[i].dress)
         }
-        //var geocoder = new qq.maps.Geocoder(callbacks);
-        list.map((item,index)=>{
-            //腾讯地图的api
-            var geocoder = new qq.maps.Geocoder(callbacks)
-            geocoder.getLocation(item.dress);
-        });
     }
 
     /**
      * 关联地址与坐标 
      */
     combineShopListWithLocation(){
-        let { shopListData,location } = this.state;
-        let _shopListDetail = [];
-        shopListData.map((item,index)=>{
-            if(location[index]){
-                let distance = {};
-                //let from =  new qq.maps.latLng();
-                //let to = new qq.maps.latLng(...location);
-                //qq.maps.geometry.spherical.computeDistanceBetween(from,to)
-                _shopListDetail.push(JSON.parse(JSON.stringify(Object.assign(item,location[index]))));
+        let { shopListData,userLocation,location } = this.state;
+        //console.log(location);
+        for (let i = 0; i < shopListData.length;i++){
+            for(let j=0;j<location.length;j++){
+                if(shopListData[i].dress.includes(location[j].addressComponents.street)){
+                    let from, to, distance;
+                    from = new qq.maps.LatLng(userLocation.lat, userLocation.lng);
+                    to = new qq.maps.LatLng(location[j].location.lat, location[j].location.lng);
+                    distance = qq.maps.geometry.spherical.computeDistanceBetween(from, to);
+                    shopListData[i].distance = (distance / 1000).toFixed(2);
+                    shopListData[i].lat = location[j].location.lat;
+                    shopListData[i].lng = location[j].location.lng;
+                }
             }
-        });
+        }
         this.setState({
-            shopListDetail:_shopListDetail
-        });
+            shopListData
+        })
     }
-    /** 
-     * 计算两地之间距离 
-     * @param from  用户当前位置
-     * @param to    所有门店位置
-     */
-    getDistance(from,to){
-        /* from = new qq.maps.LatLng(...from);
-        to = new qq.maps.LatLng(...to); */
-        from = new qq.maps.LatLng(30.18044, 120.26557);
-        to = new qq.maps.LatLng(30.180775, 120.45208);
-        console.log(qq.maps.geometry.spherical.computeDistanceBetween(from,to))
-    }
+
 
     jump(name) {
 		/**
@@ -173,36 +159,43 @@ class ShopLists extends Module {
 		 */
         this.props.history.push({
             pathname: name,
-            search: `?type=${this.state.type}`
+            //search: `?type=${this.state.type}`
         });
 
 
     }
-
+    
     renderRow = (rowData, sectionID, rowID) => {
+        console.log(rowData)
         return (
-            <div className="bg_f shop-item">
+            <div className="bg_f shop-item" 
+                 onClick={()=>{this.props.history.push({
+                     pathname:'/ShopDetails',
+                     search:`?name=${rowData.dianpu}&addr=${rowData.dress}&image=${rowData.image}&lat=${rowData.lat}&lng=${rowData.lng}`
+                 })}}
+            >
                 <WingBlank size="md">
                     <div className="fs_14 shop-item-name">
-                        店铺:滨江区西兴街道
+                        店铺:{rowData.dianpu}
                         </div>
                     <Flex align="end" className="shop-item-details">
                         <div className="shop-item-logo">
-                            <img width="100%" height="100%" src={require('../../resources/images/logo.png')} />
+                            <img width="100%" height="100%" src={rowData.image} />
                         </div>
                         <Flex align="stretch" justify="between" className="fs_12 shop-item-addr" direction="column">
                             <div style={{ color: 'rgba(0,0,0,.8)' }}>
-                                <Text>浙江省杭州市滨江区西兴街道101号健康路径1号店</Text>
+                                <Text>{rowData.dress}</Text>
                             </div>
                             <div style={{ color: 'rgba(0,0,0,.6)' }}>
                                 <Text>营业时间9:00-18:00</Text>
                             </div>
                         </Flex>
                         <div className="fs_12 shop-item-distance" style={{ color: 'rgba(0,0,0,.3)' }}>
-                            0.8km
-                            </div>
+                            {rowData.distance}km
+                        </div>
                     </Flex>
                 </WingBlank>
+                <WhiteSpace className="bg_f5" size="md" />
             </div>
         )
     }
@@ -223,12 +216,11 @@ class ShopLists extends Module {
 
     onRefresh = () => {
         this.setState({ refreshing: true, isLoading: true, PageIndex: 1, isReload: true });
-        this.getList();
+        this.getStoresListsData();
     };
 
     render() {
-        let { shopListDetail } = this.state;
-        console.log(shopListDetail)
+        let { shopListData } = this.state;
         return (
             <div className="C_ShopLists">
                 <Flex justify="between" className="headers bg_f">
@@ -240,46 +232,24 @@ class ShopLists extends Module {
                     </Flex>
                 </Flex>
                 <WhiteSpace size="md" />
-                <div className="bg_f shop-item">
-                    <WingBlank size="md">
-                        <div className="fs_14 shop-item-name">
-                            店铺:滨江区西兴街道
-                        </div>
-                        <Flex align="end" className="shop-item-details">
-                            <div className="shop-item-logo"> 
-                                <img width="100%" height="100%" src={require('../../resources/images/logo.png')} />
-                            </div>
-                            <Flex align="stretch" justify="between" className="fs_12 shop-item-addr" direction="column">
-                                <div style={{color:'rgba(0,0,0,.8)'}}>
-                                    <Text>浙江省杭州市滨江区西兴街道101号健康路径1号店</Text>
-                                </div>
-                                <div style={{ color: 'rgba(0,0,0,.6)' }}>
-                                    <Text>营业时间9:00-18:00</Text>
-                                </div>
-                            </Flex>
-                            <div className="fs_12 shop-item-distance" style={{ color: 'rgba(0,0,0,.3)' }}>
-                                0.8km
-                            </div>
-                        </Flex>
-                    </WingBlank>
-                </div>
-                {/* <ListView
+                <ListView
                     ref={el => this.lv = el}
-                    dataSource={new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 }).cloneWithRows(listData)}
+                    dataSource={new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 }).cloneWithRows(shopListData)}
                     renderRow={this.renderRow}
                     scrollRenderAheadDistance={500}
                     pageSize={4}
                     onEndReached={this.onEndReached}
                     onEndReachedThreshold={10}
-                    renderFooter={() => (<div style={{ textAlign: 'center' }}>
+                    /* renderFooter={() => (<div style={{ textAlign: 'center' }}>
                         {isLoading && '加载中...'}
                         {!hasMore && '没有更多了'}
                     </div>)}
                     pullToRefresh={<PullToRefresh
                         refreshing={this.state.refreshing}
                         onRefresh={this.onRefresh}
-                    />}
-                /> */}
+                    />} */
+                />
+                
 			</div>
         )
     }
