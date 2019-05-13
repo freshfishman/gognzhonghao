@@ -30,7 +30,7 @@ const Mock = require('mockjs');
 // 	res.json(data)
 // });
 
-router.post('/BB_OfficialAccounts/Signature', (req, res, next) => {
+router.post('/WeiXins/Signature', (req, res, next) => {
 	let data = Mock.mock({
 		"code": "200",
 		"codeDesc": "",
@@ -44,7 +44,7 @@ router.post('/BB_OfficialAccounts/Signature', (req, res, next) => {
 		"userHasLogined": false,
 		"isMonitorAccount": false,
 		"data": {
-			"signat": "jsapi_ticket=HoagFKDcsGMVCIY2vOjf9gqamBvcLn6BjeQfkzELg3s_Vf_jBmxVAonhiOpTdqkwnzPIZJq-l7SF7kyAvwdxkg&noncestr=uXuElimFDLoIrwy&timestamp=1557310825&url=http://101.37.80.132:8085/BB_OfficialAccounts/HTML/index.html",
+			"signat": "jsapi_ticket=HoagFKDcsGMVCIY2vOjf9gqamBvcLn6BjeQfkzELg3s_Vf_jBmxVAonhiOpTdqkwnzPIZJq-l7SF7kyAvwdxkg&noncestr=uXuElimFDLoIrwy&timestamp=1557310825&url=http://101.37.80.132:8085/WeiXins/HTML/index.html",
 			"noncestamp": "uXuElimFDLoIrwy",
 			"tiemstamp": 1557310825
 		}
@@ -52,7 +52,7 @@ router.post('/BB_OfficialAccounts/Signature', (req, res, next) => {
 	res.json(data)
 });
 
-router.post('/BB_OfficialAccounts/Stores', (req, res, next) => {
+router.post('/WeiXins/Stores', (req, res, next) => {
 	let data = Mock.mock({
 		"code": "200",
 		"codeDesc": "",
@@ -179,7 +179,7 @@ router.post('/BB_OfficialAccounts/Stores', (req, res, next) => {
 	});
 	res.json(data)
 });
-router.post('/BB_OfficialAccounts/DanceType', (req, res, next) => {
+router.post('/WeiXins/DanceType', (req, res, next) => {
 	let data = Mock.mock({
 		"code": "200",
 		"codeDesc": "",
@@ -201,7 +201,7 @@ router.post('/BB_OfficialAccounts/DanceType', (req, res, next) => {
 	});
 	res.json(data)
 });
-router.post('/BB_OfficialAccounts/Inform', (req, res, next) => {
+router.post('/WeiXins/Inform', (req, res, next) => {
 	let data = Mock.mock({
 		"code": "200",
 		"codeDesc": "",

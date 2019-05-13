@@ -111,10 +111,12 @@ class Experience extends Module {
                 <div className="carousel">
                     <Carousel className="space-carousel"
                         frameOverflow="visible"
-                        cellSpacing={16}
+                        cellSpacing={10}
                         slideWidth={0.8}
                         autoplay
                         infinite
+                        swipeSpeed={15}
+                        autoplayInterval={2000}
                         afterChange={index => this.setState({ slideIndex: index })}
                     >
                         {this.state.data.map((val, index) => (

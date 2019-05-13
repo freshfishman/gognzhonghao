@@ -8,7 +8,6 @@ class ShopLists extends Module {
         super(props);
         this.state={
             shopListData:[],                             //门店列表 
-            location:[],                                 //腾讯api返回门店具体地址
             distances:[],                                //距离      
             userLocation: null || { lat: 30.180775, lng: 120.26557},                             //用户当前坐标  
             isLoading:true,    
@@ -36,7 +35,7 @@ class ShopLists extends Module {
                 console.log(res);
                 WX.config({
                     debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-                    appId: 'wxaff0bc4ad040f2a8', // 必填，公众号的唯一标识
+                    appId: 'wxd475da4efb393ee2', // 必填，公众号的唯一标识
                     timestamp: res.data.tiemstamp, // 必填，生成签名的时间戳
                     nonceStr: res.data.noncestamp, // 必填，生成签名的随机串
                     signature: res.data.signat   ,// 必填，签名
@@ -46,7 +45,7 @@ class ShopLists extends Module {
                     WX.checkJsApi({
                         jsApiList:['geoLocation'],
                         success:function(res){
-                            console.log(res)
+                            
                         }
                     })
                 })
@@ -204,7 +203,7 @@ class ShopLists extends Module {
         )
     }
 
-    onEndReached = () => {
+    /* onEndReached = () => {
         let { isLoading, hasMore, PageIndex } = this.state;
         this.state.getMessageNum = null;
         if (isLoading || !hasMore) {
@@ -216,12 +215,12 @@ class ShopLists extends Module {
         }, () => {
             this.getList();
         });
-    }
+    } */
 
-    onRefresh = () => {
+    /* onRefresh = () => {
         this.setState({ refreshing: true, isLoading: true, PageIndex: 1, isReload: true });
         this.getStoresListsData();
-    };
+    }; */
 
     render() {
         let { shopListData } = this.state;
@@ -238,12 +237,11 @@ class ShopLists extends Module {
                 </Flex>
                 <WhiteSpace size="md" />
                 <ListView
-                    ref={el => this.lv = el}
                     dataSource={new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 }).cloneWithRows(shopListData)}
                     renderRow={this.renderRow}
                     scrollRenderAheadDistance={500}
                     pageSize={4}
-                    onEndReached={this.onEndReached}
+                    /* onEndReached={this.onEndReached} */
                     onEndReachedThreshold={10}
                     /* renderFooter={() => (<div style={{ textAlign: 'center' }}>
                         {isLoading && '加载中...'}
