@@ -40,10 +40,15 @@ class ShopLists extends Module {
                     timestamp: res.data.tiemstamp, // 必填，生成签名的时间戳
                     nonceStr: res.data.noncestamp, // 必填，生成签名的随机串
                     signature: res.data.signat   ,// 必填，签名
-                    jsApiList: ['getLocation'] // 必填，需要使用的JS接口列表
+                    jsApiList: ['getLocation','checkJsApi'] // 必填，需要使用的JS接口列表
                 }); 
                 WX.ready(function (params) {
-                    
+                    WX.checkJsApi({
+                        jsApiList:['geoLocation'],
+                        success:function(res){
+                            console.log(res)
+                        }
+                    })
                 })
         })
     }
