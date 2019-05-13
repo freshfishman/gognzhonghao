@@ -63,7 +63,7 @@ class Experience extends Module {
         if(userName&&userPhone){
             this.request({
                 api:'GetExperienceInfo',
-                parama:{
+                params:{
                     PHONE:userPhone,
                     NAME:userName,
                     SIID:siid,

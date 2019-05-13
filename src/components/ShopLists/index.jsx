@@ -33,14 +33,18 @@ class ShopLists extends Module {
         this.request({
             api:'GetSignature'
             },res=>{
+                console.log(res);
                 WX.config({
                     debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
                     appId: 'wxaff0bc4ad040f2a8', // 必填，公众号的唯一标识
-                    timestamp: res.timestamp, // 必填，生成签名的时间戳
-                    nonceStr: res.noncestamp, // 必填，生成签名的随机串
-                    signature: res.signat   ,// 必填，签名
+                    timestamp: res.deta.timestamp, // 必填，生成签名的时间戳
+                    nonceStr: res.data.noncestamp, // 必填，生成签名的随机串
+                    signature: res.data.signat   ,// 必填，签名
                     jsApiList: ['getLocation'] // 必填，需要使用的JS接口列表
                 }); 
+                WX.ready(function (params) {
+                    
+                })
         })
     }
 
@@ -52,7 +56,7 @@ class ShopLists extends Module {
         //jssdk的定位接口
         var that = this;
         WX.getLocation({
-            type: 'wgs84',                     // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+            type: 'gcj02',                     // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
             success: function (res) {
                 var _userLocation = {};
                 var latitude = res.latitude;   // 纬度，浮点数，范围为90 ~ -90
@@ -97,54 +101,41 @@ class ShopLists extends Module {
      */
     getShopsLocation(list){
         var _location = [];
-        /* list.map((item,index)=>{
-            $.ajax({
-                url: `https://apis.map.qq.com/ws/geocoder/v1/?address=${item.dress}&key=BC2BZ-6MFK6-A2EST-MMYG5-M7ZSH-JGFTX`,
-                type:'get',
-            }).done(res=>{
-                console.log(res);
-            })
-        }) */
-        var that = this
+        var that = this;
         for(let i=0;i<list.length;i++){
-
-            let geocoder = null;
-            geocoder = new qq.maps.Geocoder();
-            geocoder.setComplete(function(result){
-                //console.log(result.detail,list[i].dress)
-                _location.push(result.detail);
-                that.setState({
-                    location: _location
-                }, () => {
-                    console.log(that.state.location)
-                    that.combineShopListWithLocation();
-                })
-            });
-            geocoder.getLocation(list[i].dress)
+            this.getDemoLocation(list[i],_location);
         }
     }
 
-    /**
-     * 关联地址与坐标 
+    /** 
+     * 获取坐标及距离 
      */
-    combineShopListWithLocation(){
-        let { shopListData,userLocation,location } = this.state;
-        console.log(location);
-        for (let i = 0; i < shopListData.length;i++){
-            for(let j=0;j<location.length;j++){
-                if(shopListData[i].dress.includes(location[j].addressComponents.street)){
-                    let from, to, distance;
-                    from = new qq.maps.LatLng(userLocation.lat, userLocation.lng);
-                    to = new qq.maps.LatLng(location[j].location.lat, location[j].location.lng);
-                    distance = qq.maps.geometry.spherical.computeDistanceBetween(from, to);
-                    shopListData[i].distance = Number((distance / 1000).toFixed(2));
-                    shopListData[i].lat = location[j].location.lat;
-                    shopListData[i].lng = location[j].location.lng;
-                }
-            }
-        }
-        this.setState({
-            shopListData
+    getDemoLocation(detail,arr){
+        return new Promise((resolve,reject)=>{
+            let geocoder = null;
+            let that = this;
+            let from, to, distance;
+            let { userLocation } = this.state;
+            from = new qq.maps.LatLng(userLocation.lat, userLocation.lng);
+            geocoder = new qq.maps.Geocoder();
+            geocoder.setComplete(function(result) {
+                resolve(
+                    detail.result = result,
+                    to = new qq.maps.LatLng(result.detail.location.lat,result.detail.location.lng),
+                    distance = qq.maps.geometry.spherical.computeDistanceBetween(from,to),
+                    detail.distance = Number((distance / 1000).toFixed(2)),
+                    arr.push(detail),
+                    that.setState({
+                        shopListData:arr
+                    },()=>{
+                        //console.log(that.state.shopListData)
+                    })
+                );
+            });
+            geocoder.setError(function(err) {
+                console.log(err+'----'+'门店地址不明确')
+            })
+            geocoder.getLocation(detail.dress);
         })
     }
 
@@ -175,12 +166,11 @@ class ShopLists extends Module {
     }
     
     renderRow = (rowData, sectionID, rowID) => {
-        //console.log(rowData)
         return (
             <div className="bg_f shop-item" 
                  onClick={()=>{this.props.history.push({
                      pathname:'/ShopDetails',
-                     search:`?name=${rowData.dianpu}&addr=${rowData.dress}&image=${rowData.image}&lat=${rowData.lat}&lng=${rowData.lng}&siid=${rowData.siid}`
+                     search: `?name=${rowData.dianpu}&addr=${rowData.dress}&image=${rowData.image}&lat=${rowData.result.detail.location.lat}&lng=${rowData.result.detail.location.lng}&siid=${rowData.siid}`
                  })}}
             >
                 <WingBlank size="md">

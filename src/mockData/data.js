@@ -179,7 +179,7 @@ router.post('/BB_OfficialAccounts/Stores', (req, res, next) => {
 	});
 	res.json(data)
 });
-router.post('/BB_OfficialAccounts/DanceTypes1', (req, res, next) => {
+router.post('/BB_OfficialAccounts/DanceType', (req, res, next) => {
 	let data = Mock.mock({
 		"code": "200",
 		"codeDesc": "",
