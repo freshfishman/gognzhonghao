@@ -9,7 +9,10 @@ class Experience extends Module {
         super(props);
         this.state={
             data:[1,2,3,4],                        //
-            imagesUrl:[],                          //轮播图连接
+            imagesUrl: ["http://qiniu.hinets.net/zhongguowu.jpg?imageMogr2/format/jpg/quality/75",
+                        "http://qiniu.hinets.net/jiewu.jpg?imageMogr2/format/jpg/quality/75",
+                        "http://qiniu.hinets.net/ladingwu.jpg?imageMogr2/format/jpg/quality/75",
+                        "http://qiniu.hinets.net/taiquandao.jpg?imageMogr2/format/jpg/quality/75"],                          //轮播图连接
             userName:'',                           //用户姓名
             userPhone:'',                          //用户手机号码
             siid:'',                               //当前店铺的id
@@ -26,14 +29,9 @@ class Experience extends Module {
      *获取轮播图 
      */
     getSwiperImages(){
-        let siid = this.props.location.search.substring(1).split('=')[1]
-        this.request({
-            api:'GetSwiperImages'
-        },res=>{
-            this.setState({
-                imagesUrl:res.data,
-                siid
-            })
+        let siid = this.props.location.search.substring(1).split('=')[1];
+        this.setState({
+            siid
         })
     }
 
@@ -160,7 +158,7 @@ class Experience extends Module {
                                 type="phone"
                                 placeholder="请填写手机号码"
                                 onChange={val=>{this.changePhone(val)}}
-                            >填写手机号</InputItem>
+                            >手机号</InputItem>
                         </ListItem>
                     </List>
                 </div>

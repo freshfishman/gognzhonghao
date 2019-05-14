@@ -1,5 +1,5 @@
-let href = "http://192.168.124.24:3000/mock";       //mock
-//let href ='';
+//let href = "http://192.168.124.24:3000/mock";       //mock
+let href ='';
 //let href = "http://192.168.0.107:3000/mock"
 let API_LIST = {
     "GetStoresList": href + "/WeiXins/Stores",          //门店信息列表

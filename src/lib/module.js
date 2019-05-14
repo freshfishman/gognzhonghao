@@ -260,7 +260,7 @@ class Module extends React.Component {
 	 * 修改title
 	 * @param name
 	 */
-	changeTilte(name) {
+	changeTitle(name) {
 		document.title = name;
 	}
 

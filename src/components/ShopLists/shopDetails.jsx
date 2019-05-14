@@ -2,6 +2,7 @@ import React from 'react';
 import Module from '../../lib/module';
 import { Flex, WhiteSpace, WingBlank, Text } from 'antd-mobile';
 const h = document.documentElement.clientHeight;
+const w = document.documentElement.clientWidth-20;
 let classMap, windowMap;
 const WX = window.wx;
 class ShopDetails extends Module {
@@ -45,7 +46,12 @@ class ShopDetails extends Module {
                 mapTypeIds: [
                     qq.maps.MapTypeId.ROADMAP
                 ],
-            }
+            },
+            draggable:false,
+            disableDoubleClickZoom: false,
+            scrollwheel: false,
+            mapTypeControl: false,  
+            zoomControl: false,
         };
         var map = new qq.maps.Map(document.getElementById("shop-map"), myOptions);
         var marker = new qq.maps.Marker({
@@ -121,13 +127,13 @@ class ShopDetails extends Module {
         return (
             shopDetail && <div className="C_ShopDetails bg_f" style={{height:h}}>
                 <div className="headers">
-                    <img width="100%" height="100%" src={shopDetail.image} />
+                    <img width="100%" height="100%" src={`${shopDetail.image}?imageMogr2/format/jpg/quality/75`} />
                 </div>
                 <Flex className="shop-info wShadow">
                     <div>
                         <img src={require('../../resources/images/logo.png')} />
                     </div>
-                    <div className="fs_14" style={{ flex: 1, marginLeft: '14px', color:'rgba(115, 196, 112, 1)'}}>
+                    <div className="fs_20" style={{ flex: 1, marginLeft: '14px', color:'rgba(115, 196, 112, 1)'}}>
                         <Text>健康路径{shopDetail.name}</Text>
                     </div>
                     <div 
@@ -143,19 +149,45 @@ class ShopDetails extends Module {
                 <div id="shop-map"></div>
                 <WingBlank>
                     <div style={{ color: 'rgba(0,0,0,.8)',fontWeight: 600 }}>
-                    <div className="fs_16">基础信息</div>
+                    <div className="fs_16">基本信息</div>
                     <WhiteSpace size="md" />
                     <div className="fs_12">
-                        <Text style={{ color: 'rgba(0,0,0,.6)' }}>公司全称:</Text>
+                        <Text style={{ color: 'rgba(0,0,0,.6)' }}>公司全称：</Text>
                         <Text >健康路径{shopDetail.name}</Text>
                     </div>
                     <WhiteSpace size="md" />
                     <div className="fs_12">
-                        <Text style={{ color: 'rgba(0,0,0,.6)' }}>公司电话:</Text>
-                        <Text>82567321</Text>
+                        <Text style={{ color: 'rgba(0,0,0,.6)' }}>培训课程：</Text>
+                        <Text>跆拳道、拉丁舞、中国舞、街舞</Text>
                     </div>
+                    <WhiteSpace size="md" />
+                    <Flex align="start" className="fs_12">
+                        <div>
+                            <Text style={{ color: 'rgba(0,0,0,.6)' }}>营业时间：</Text>
+                        </div>
+                        <div>
+                            <div>
+                                <Text>周二至周五 13:00--21:00</Text>
+                            </div>
+                            <WhiteSpace size="md" />
+                            <div>
+                                <Text>周六至周日 08:00--21:00</Text>
+                            </div>
+                        </div>
+                        
+                    </Flex>
+                    <WhiteSpace size="md" />
+                    <Flex align="center" className="fs_12">
+                        <div>
+                            <Text style={{ color: 'rgba(0,0,0,.6)' }}>公司电话：</Text>
+                        </div>
+                        <div>
+                            <Text><a href="tel:0571-82567321" style={{ color: 'rgba(76, 181, 255, .8)', fontSize: '.14rem' }}>0571-82567321</a></Text>
+                        </div>
+                    </Flex>
                 </div>
                 </WingBlank>
+                <WhiteSpace size="xl" />
             </div>
         )
     }

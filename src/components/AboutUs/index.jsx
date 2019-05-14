@@ -11,6 +11,7 @@ import {
     PlaybackRateMenuButton,
     VolumeMenuButton
 } from 'video-react';
+const h = document.documentElement.clientHeight - 50
 
 class AboutUs extends Module {
     constructor(props) {
@@ -52,6 +53,7 @@ class AboutUs extends Module {
     render() {
         return (
             <div className="C_AboutUs">
+                <div style = {{height:h,overflowY:'scroll'}}>
                 <WhiteSpace size="xl" />
                 <div className="title fs_18">
                     <span style={{ display: 'inline-block', width: '4px', height: '4px', borderRadius: '4px', background:'#78DF04',verticalAlign:'middle',marginRight:'6px'}}></span>
@@ -82,13 +84,13 @@ class AboutUs extends Module {
                 <WhiteSpace size="lg" />
                 <WingBlank size="md">
                     <div>
-                        <p className="paragraph fs_12">
+                        <p className="paragraph fs_12" style={{textIndent:'.24rem'}}>
                             我们是一家专业从事青少年儿童体育与艺术培训的连锁机构。经营品牌为健康路径，寓意：通过科学适量的运动训练，达到促进学员身心健康的目的，即我们不但要传授学员最专业的运动技术，更要培养身心健康全面发展的优秀学员，要做好当前学校教育的有效补充。
                         </p>
-                        <p className="paragraph fs_12">
+                        <p className="paragraph fs_12" style={{ textIndent: '.24rem' }}>
                             目前直营分店主要集中分布在杭州、绍兴、嘉兴及宁波等地。开设的运动课程有基础体能、跆拳道、中国舞、拉丁舞、街舞、还有针对高端群体的少儿击剑和体适能（筹备开设中）等运动项目。现有常年在学学员2万多人，教职工180多人。培训对象为5至15岁的青少年儿童。
                         </p>
-                        <p className="paragraph fs_12">
+                        <p className="paragraph fs_12" style={{ textIndent: '.24rem' }}>
                             百师名匠，创品牌力量，我们本着以教学为王的教学理念为核心，用心、用爱来做儿童受益终生的运动教学服务。
                         </p>
                     </div>
@@ -161,18 +163,18 @@ class AboutUs extends Module {
                                     拉丁舞
                                 </div>
                             </div>
-                            <div className="desc dShadow">
+                            <div className="desc dShadow" style={{ textIndent: '.24rem' }}>
                                 <Text>无论是从生理心理或社交的观点来看,跳拉丁舞是项高带氧的最佳运动之一。它不单有趣、自由,最大的好处是它总是与别人一起完成,可以强身健体,避免过渡肥胖或瘦弱。</Text>
                                 
                             </div>
                         </div>
-                        <div className="lessons-item dShadow">
+                        <div className="lessons-item dShadow" style={{ textIndent: '.24rem' }}>
                             <div className="hip-hop">
                                 <div className="mask">
                                     街舞
                                 </div>
                             </div>
-                            <div className="desc dShadow">
+                            <div className="desc dShadow" style={{ textIndent: '.24rem' }}>
                                 <Text>跳舞可使新陈代谢显著增强,儿童正处于骨骼的生长时期,使其身体各部的生长发育更快舞指可增加骨的血液供给，使骨组织得到更多的营养物质,又能给生长的骨骺受到适当刺激。</Text>
                                 
                             </div>
@@ -183,7 +185,7 @@ class AboutUs extends Module {
                                     跆拳道
                                 </div>
                             </div>
-                            <div className="desc dShadow">
+                            <div className="desc dShadow" style={{ textIndent: '.24rem' }}>
                                 <Text>学习跆拳道対儿童的好处很多不只可以培养儿童的意志カ,增强体质，使身体更加柔软対体型也有很好的帮助而且可以改变内向的性格,増加自信心,突出性格,让注意力更加集中。</Text>
                                 
                             </div>
@@ -194,7 +196,7 @@ class AboutUs extends Module {
                                     中国舞
                                 </div>
                             </div>
-                            <div className="desc dShadow">
+                            <div className="desc dShadow" style={{ textIndent: '.24rem' }}>
                                 <Text>通过科学系统的舞蹈教学训练,可以塑造美丽,增添魅力,锻炼体力,增强体质,磨练毅力，,培养自信心,丰富想像力,促进智力,还可以陶冶心灵,培养出活泼、热情开朗的性格。</Text>
                                 
                             </div>
@@ -202,6 +204,7 @@ class AboutUs extends Module {
                     </div>
                 </WingBlank>
                 <WhiteSpace size="xl" />
+                </div>
                 <Flex justify="center" align="center" className="tel fs_18">
                     <div className="tel-icon"></div>
                     <div style={{ color:'#F1E945'}}>咨询电话：</div>

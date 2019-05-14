@@ -10,7 +10,7 @@ class App extends Module {
 	}
 
 	componentDidMount() {
-
+		this.changeTitle('健康路径')
 		// console.log(Toast);
 	}
 

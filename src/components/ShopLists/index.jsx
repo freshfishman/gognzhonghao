@@ -1,7 +1,8 @@
 import React from 'react';
 import Module from '../../lib/module';
-import { Flex, WhiteSpace, WingBlank,Text,ListView,PullToRefresh } from 'antd-mobile';
+import { Flex, WhiteSpace, WingBlank,Text,ListView,PullToRefresh,Toast } from 'antd-mobile';
 import _ from 'lodash';
+import $ from 'jquery';
 const WX = window.wx;
 class ShopLists extends Module {
     constructor(props) {
@@ -19,7 +20,6 @@ class ShopLists extends Module {
     componentDidMount() {
         // console.log(this.props.location.query);
         this.getWxConfig();
-        this.getOwnerLocation();
         this.getStoresListsData();
     }
     
@@ -29,13 +29,17 @@ class ShopLists extends Module {
      * 需要timestamp,nonceStr,signature 
      */
     getWxConfig(){
+        console.log(window.location.href.split('#')[0])
         this.request({
-            api:'GetSignature'
-            },res=>{
-                console.log(res);
+            api:'GetSignature',
+            params:{
+                URL:window.location.href.split('#')[0]
+            }
+        },res=>{
+                var that = this
                 WX.config({
-                    debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-                    appId: 'wxd475da4efb393ee2', // 必填，公众号的唯一标识
+                    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                    appId: 'wx3537810f129eda5a', // 必填，公众号的唯一标识
                     timestamp: res.data.tiemstamp, // 必填，生成签名的时间戳
                     nonceStr: res.data.noncestamp, // 必填，生成签名的随机串
                     signature: res.data.signat   ,// 必填，签名
@@ -47,37 +51,30 @@ class ShopLists extends Module {
                         success:function(res){
                             
                         }
+                    });
+                    /**
+                     * 获取用户当前地理位置
+                     * 使用jssdk
+                     */
+                    WX.getLocation({
+                        type: 'gcj02',                     // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+                        success: function (res) {
+                            var _userLocation = {};
+                            var latitude = res.latitude;   // 纬度，浮点数，范围为90 ~ -90
+                            var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+                            var speed = res.speed;         // 速度，以米/每秒计
+                            var accuracy = res.accuracy;   // 位置精度
+                            _userLocation.lat = latitude;
+                            _userLocation.lng = longitude;
+                            that.setState({
+                                userLocation: _userLocation
+                            })
+                        }
                     })
                 })
         })
     }
 
-    /**
-     * 获取用户当前地理位置
-     * 使用jssdk 
-     */
-    getOwnerLocation(){
-        //jssdk的定位接口
-        var that = this;
-        WX.getLocation({
-            type: 'gcj02',                     // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
-            success: function (res) {
-                var _userLocation = {};
-                var latitude = res.latitude;   // 纬度，浮点数，范围为90 ~ -90
-                var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
-                var speed = res.speed;         // 速度，以米/每秒计
-                var accuracy = res.accuracy;   // 位置精度
-                _userLocation.lat = latitude;
-                _userLocation.lng = longitude;
-                that.setState({
-                    userLocation:_userLocation
-                })
-            }
-        })
-    }
-
-    
-    
     /**
      * 获取门店信息 
      */
@@ -179,19 +176,31 @@ class ShopLists extends Module {
             >
                 <WingBlank size="md">
                     <div className="fs_14 shop-item-name">
-                        店铺:{rowData.dianpu}
+                        {rowData.dianpu}
                         </div>
                     <Flex align="end" className="shop-item-details">
                         <div className="shop-item-logo">
-                            <img width="100%" height="100%" src={rowData.image} />
+                            <img width="100%" height="100%" src={`${rowData.image}?imageMogr2/format/jpg/quality/20`} />
                         </div>
                         <Flex align="stretch" justify="between" className="fs_12 shop-item-addr" direction="column">
                             <div style={{ color: 'rgba(0,0,0,.8)' }}>
                                 <Text>{rowData.dress}</Text>
                             </div>
-                            <div style={{ color: 'rgba(0,0,0,.6)' }}>
-                                <Text>营业时间9:00-18:00</Text>
-                            </div>
+                            <Flex align="start" className="fs_12">
+                                <div>
+                                    <Text style={{ color: 'rgba(0,0,0,.6)' }}>营业时间：</Text>
+                                </div>
+                                <div>
+                                    <div>
+                                        <Text>周二至周五 13:00--21:00</Text>
+                                    </div>
+                                    <WhiteSpace size="md" />
+                                    <div>
+                                        <Text>周六至周日 08:00--21:00</Text>
+                                    </div>
+                                </div>
+
+                            </Flex>
                         </Flex>
                         <div className="fs_12 shop-item-distance" style={{ color: 'rgba(0,0,0,.3)' }}>
                             {rowData.distance}km
@@ -202,6 +211,17 @@ class ShopLists extends Module {
             </div>
         )
     }
+
+    loadingToast(){
+        Toast.loading('资源加载中，请稍等...',0)
+    }
+    
+    componentDidUpdate = (prevProps, prevState) => {
+      if(this.state.shopListData.length>0){
+          Toast.hide();
+      }
+    };
+    
 
     /* onEndReached = () => {
         let { isLoading, hasMore, PageIndex } = this.state;
@@ -226,6 +246,7 @@ class ShopLists extends Module {
         let { shopListData } = this.state;
         shopListData = _.sortBy(shopListData,['distance']);
         return (
+            (shopListData.length>0)?(
             <div className="C_ShopLists">
                 <Flex justify="between" className="headers bg_f">
                     <div className="logo"></div>
@@ -253,7 +274,7 @@ class ShopLists extends Module {
                     />} */
                 />
                 
-			</div>
+            </div>): <div onClick={this.loadingToast()}></div>
         )
     }
 
